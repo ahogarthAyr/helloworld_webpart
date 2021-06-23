@@ -37,6 +37,7 @@ export interface ISPList {
   Title: string;
   Id: string;
   EncodedAbsUrl: string;
+  Description: string;
 }
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
@@ -44,16 +45,8 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
   public render(): void {
     this.domElement.innerHTML = `
     <div class="${ styles.helloWorld }">
-      <div class="${ styles.container }">
-        <div class="${ styles.row }">
-          <div class="${ styles.column }">
-            <span class="${ styles.title }">Site Pages</span>
-            <p class="${ styles.description }">${escape(this.properties.description)}</p>
-            <p class="${ styles.description }">${escape(this.properties.test)}</p>
-          </div>
-        </div>
         <div id="spListContainer" />
-      </div>
+         </div>
     </div>`;
   
   this._renderListAsync();
@@ -114,22 +107,22 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
   // }
 
   private _getListData(): Promise<ISPLists> {
-    return this.context.spHttpClient.get(this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('Site%20Pages')/items?$select=EncodedAbsUrl,Title`, SPHttpClient.configurations.v1)
+    return this.context.spHttpClient.get(this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('Site%20Pages')/items?$select=EncodedAbsUrl,Title,Description`, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
         return response.json();
       });
   }
   private _renderList(items: ISPList[]): void {
-    let html: string = '';
+    let html: string = ' ';
     items.forEach((item: ISPList) => {
-      html += `
-    <ul class="${styles.list}">
-      <li class="${styles.listItem}">
-      <a href=${item.EncodedAbsUrl} class="ms-font-l">${item.Title}</a>
-      </li>
-    </ul>`;
+      html += `       
+              <div class="${styles.column}">
+                  <a href="${item.EncodedAbsUrl}">${item.Title}</a>
+                  <p>${item.Description}</p>
+              </div>  
+    `;
     });
-  
+
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
     listContainer.innerHTML = html;
   }
