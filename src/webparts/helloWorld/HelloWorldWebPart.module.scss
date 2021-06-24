@@ -1,27 +1,17 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
 .helloWorld {
-  // .container {
-  //   // max-width: 700px;
-    margin: 0px auto;
-  //   // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
-
-  // }
-
-
-  // .row {
-  //   @include ms-Grid-row;
-  // }
 
   .column {
     @include ms-Grid-col;
     @include ms-font-l;
     @include ms-md4; 
-    float: left;
-    margin-bottom: 20px
-
+    margin-bottom: 20px;
   }
 
+  .column a {
+    color:rgb(75, 71, 71);
+  }
 
   .title:link {
     text-decoration: none;
@@ -34,24 +24,13 @@
     display: inline-block;
 }
 
-
-
-  // .title {
-  //   @include ms-font-xl;
-  //   @include ms-fontColor-white;
-  // }
-
-  // .subTitle {
-  //   @include ms-font-l;
-  //   @include ms-fontColor-white;
-  // }
-
   .description {
     font-family: "Segoe UI WestEuropean","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
     -webkit-font-smoothing: antialiased;
     font-size: $ms-font-size-m;
     font-weight: $ms-font-weight-regular;
     text-overflow: ellipsis;
+    color: rgb(112, 108, 108);
   }
 
   .button {
@@ -77,34 +56,6 @@
     cursor: pointer;
     display: inline-block;
     padding: 0 16px;
-
-    .list {
-      color: #333333;
-      font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', Tahoma, Arial, sans-serif;
-      font-size: 14px;
-      font-weight: normal;
-      box-sizing: border-box;
-      margin: 10;
-      padding: 10;
-      line-height: 50px;
-      list-style-type: none;
-      box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
-    }
-    
-    .listItem {
-      color: #333333;
-      vertical-align: center;
-      font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', Tahoma, Arial, sans-serif;
-      font-size: 14px;
-      font-weight: normal;
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      box-shadow: none;
-      *zoom: 1;
-      padding: 9px 28px 3px;
-      position: relative;
-    }
 
     .label {
       font-weight: $ms-font-weight-semibold;

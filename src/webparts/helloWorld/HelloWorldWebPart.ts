@@ -11,7 +11,6 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import styles from './HelloWorldWebPart.module.scss';
 import * as strings from 'HelloWorldWebPartStrings';
-// import MockHttpClient from './MockHttpClient';
 import {
   SPHttpClient,
   SPHttpClientResponse
@@ -46,7 +45,6 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     this.domElement.innerHTML = `
     <div class="${ styles.helloWorld }">
         <div id="spListContainer" />
-         </div>
     </div>`;
   
   this._renderListAsync();
@@ -105,7 +103,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
       });
   }
   private _renderList(items: ISPList[]): void {
-    let html: string = ' ';
+    let html: string = '';
     items.forEach((item: ISPList) => {
       html += `       
               <div class="${styles.column}">
@@ -118,8 +116,6 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
     listContainer.innerHTML = html;
   }
-
-  // <a href=${item.FileRef.replace(/\s/g, "%20")} class="ms-font-l">${item.Title}</a>
 
   private _renderListAsync(): void {
     
