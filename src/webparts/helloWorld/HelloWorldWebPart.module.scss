@@ -30,7 +30,11 @@
     font-size: $ms-font-size-m;
     font-weight: $ms-font-weight-regular;
     text-overflow: ellipsis;
+    overflow: hidden;
     color: rgb(112, 108, 108);
+    display:-webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   .button {
