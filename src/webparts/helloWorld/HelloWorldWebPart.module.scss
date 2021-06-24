@@ -3,45 +3,55 @@
 .helloWorld {
   // .container {
   //   // max-width: 700px;
-  //   // margin: 0px auto;
+    margin: 0px auto;
   //   // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
 
   // }
 
 
-  .row {
-    @include ms-Grid-row;
-    // @include ms-fontColor-;
-    // background-color: $ms-color-themeDark;
-    // padding: 20px;
-  }
+  // .row {
+  //   @include ms-Grid-row;
+  // }
 
   .column {
     @include ms-Grid-col;
     @include ms-font-l;
-    // @include ms-lg10;
-    @include ms-xl8;
-    // @include ms-xlPush2;
-    // @include ms-lgPush1;
-    // @include ms-sm6;
     @include ms-md4; 
-    // @include ms-lg2;
     float: left;
+    margin-bottom: 20px
+
   }
 
-  .title {
-    @include ms-font-xl;
-    @include ms-fontColor-white;
-  }
 
-  .subTitle {
-    @include ms-font-l;
-    @include ms-fontColor-white;
-  }
+  .title:link {
+    text-decoration: none;
+    font-family: "Segoe UI WestEuropean","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: $ms-font-size-m;
+    font-weight: $ms-font-weight-regular;
+    border-width: 0;
+    cursor: pointer;
+    display: inline-block;
+}
+
+
+
+  // .title {
+  //   @include ms-font-xl;
+  //   @include ms-fontColor-white;
+  // }
+
+  // .subTitle {
+  //   @include ms-font-l;
+  //   @include ms-fontColor-white;
+  // }
 
   .description {
-    @include ms-font-l;
-    @include ms-fontColor-white;
+    font-family: "Segoe UI WestEuropean","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: $ms-font-size-m;
+    font-weight: $ms-font-weight-regular;
+    text-overflow: ellipsis;
   }
 
   .button {
@@ -95,8 +105,6 @@
       padding: 9px 28px 3px;
       position: relative;
     }
-
-
 
     .label {
       font-weight: $ms-font-weight-semibold;

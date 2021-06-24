@@ -98,14 +98,6 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     };
   }
 
-  // private _getMockListData(): Promise<ISPLists> {
-  //   return MockHttpClient.get()
-  //     .then((data: ISPList[]) => {
-  //       var listData: ISPLists = { value: data };
-  //       return listData;
-  //     }) as Promise<ISPLists>;
-  // }
-
   private _getListData(): Promise<ISPLists> {
     return this.context.spHttpClient.get(this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('Site%20Pages')/items?$select=EncodedAbsUrl,Title,Description`, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
@@ -117,8 +109,8 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     items.forEach((item: ISPList) => {
       html += `       
               <div class="${styles.column}">
-                  <a href="${item.EncodedAbsUrl}">${item.Title}</a>
-                  <p>${item.Description}</p>
+                  <a class="${styles.title} "href="${item.EncodedAbsUrl}">${item.Title}</a>
+                  <div class="${styles.description}" >${item.Description}</div>
               </div>  
     `;
     });
@@ -130,12 +122,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
   // <a href=${item.FileRef.replace(/\s/g, "%20")} class="ms-font-l">${item.Title}</a>
 
   private _renderListAsync(): void {
-    // Local environment
-    // if (Environment.type === EnvironmentType.Local) {
-    //   this._getMockListData().then((response) => {
-    //     this._renderList(response.value);
-    //   });
-    // }
+    
     if (Environment.type == EnvironmentType.SharePoint ||
              Environment.type == EnvironmentType.ClassicSharePoint) {
       this._getListData()
