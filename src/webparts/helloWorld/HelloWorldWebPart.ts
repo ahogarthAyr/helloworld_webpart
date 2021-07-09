@@ -1,19 +1,21 @@
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneCheckbox,
+  IPropertyPaneDropdownOption,
   PropertyPaneDropdown,
   PropertyPaneToggle,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
-import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+
+import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 import styles from './HelloWorldWebPart.module.scss';
 import * as strings from 'HelloWorldWebPartStrings';
 import {
   SPHttpClient,
-  SPHttpClientResponse
+  SPHttpClientResponse,
+  ISPHttpClientOptions
 } from '@microsoft/sp-http';
 import {
   Environment,
@@ -21,38 +23,91 @@ import {
 } from '@microsoft/sp-core-library';
 
 export interface IHelloWorldWebPartProps {
-  description: string;
-  test: string;
-  test1: boolean;
-  test2: string;
-  test3: boolean;
+  DropDownProp: string;
 }
 
-export interface ISPLists {
-  value: ISPList[];
+export interface ISPListItems {
+  value: ISPListItem[];
 }
 
-export interface ISPList {
+export interface ISPListItem {
   Title: string;
   Id: string;
   EncodedAbsUrl: string;
   Description: string;
 }
 
+export interface spList{  
+  Title:string;  
+  Id: string;  
+  }  
+  export interface spLists{  
+    value: spList[];  
+  }  
+
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
+  private dropDownOptions: IPropertyPaneDropdownOption[] = [];  
+  // public constructor(context: WebPartContext) {  
+  //   // super(context);  
+  // }  
+
 
   public render(): void {
     this.domElement.innerHTML = `
     <div class="${ styles.helloWorld }">
         <div id="spListContainer" />
     </div>`;
+    console.log("Render");  
   
-  this._renderListAsync();
+    this.LoadData();  
   }
 
   protected get dataVersion(): Version {
     return Version.parse('1.0');
-  }
+  }  
+
+  protected onPropertyPaneConfigurationStart(): void {  
+    // Stops execution, if the list values already exists  
+   if(this.dropDownOptions.length>0) return;  
+ 
+   this.context.statusRenderer.displayLoadingIndicator(this.domElement, 'DropDownProp');
+
+   // Calls function to append the list names to dropdown  
+   this.GetLists()  
+ 
+        this.context.propertyPane.refresh();
+        this.context.statusRenderer.clearLoadingIndicator(this.domElement);
+        this.render();
+ 
+ }  
+
+ private GetLists():void{  
+  // REST API to pull the list names  
+  let listresturl: string = this.context.pageContext.web.absoluteUrl + `/_api/web/lists?$select=Id,title&$filter=Hidden ne true`;  
+
+  this.LoadLists(listresturl).then((response)=>{  
+    // Render the data in the web part  
+    this.LoadDropDownValues(response.value);  
+  });  
+}  
+
+private LoadLists(listresturl:string): Promise<spLists>{  
+
+
+  return this.context.spHttpClient.get(listresturl, SPHttpClient.configurations.v1).then((response: SPHttpClientResponse)=>{  
+    return response.json();  
+  });  
+}  
+
+private LoadDropDownValues(lists: spList[]): void{  
+  lists.forEach((list:spList)=>{  
+    // Loads the drop down values  
+    this.dropDownOptions.push({"key":list.Title,"text":list.Title});
+    console.log(list.Title);
+  });  
+};
+
+
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
@@ -63,48 +118,35 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
-              groupFields: [
-              PropertyPaneTextField('description', {
-                label: 'Description'
-              }),
-              PropertyPaneTextField('test', {
-                label: 'Multi-line Text Field',
-                multiline: true
-              }),
-              PropertyPaneCheckbox('test1', {
-                text: 'Checkbox'
-              }),
-              PropertyPaneDropdown('test2', {
-                label: 'Dropdown',
-                options: [
-                  { key: '1', text: 'One' },
-                  { key: '2', text: 'Two' },
-                  { key: '3', text: 'Three' },
-                  { key: '4', text: 'Four' }
-                ]}),
-              PropertyPaneToggle('test3', {
-                label: 'Toggle',
-                onText: 'On',
-                offText: 'Off'
-              })
+              groupName:"Lists",
+              groupFields: [  
+                PropertyPaneDropdown('DropDownProp',{  
+                  label: "Select List To Display on the page",  
+                  options: this.dropDownOptions,  
+                  disabled: false,
+                  // selectedKey: this.properties.DropDownProp  
+                  
+                })
             ]
             }
+            
           ]
         }
       ]
     };
   }
 
-  private _getListData(): Promise<ISPLists> {
-    return this.context.spHttpClient.get(this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('Site%20Pages')/items?$select=EncodedAbsUrl,Title,Description`, SPHttpClient.configurations.v1)
+  private GetListData(): Promise<ISPListItems> {
+    let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=EncodedAbsUrl,Title,Description`
+
+    return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
         return response.json();
       });
   }
-  private _renderList(items: ISPList[]): void {
+  private RenderListData(items: ISPListItem[]): void {
     let html: string = '';
-    items.forEach((item: ISPList) => {
+    items.forEach((item: ISPListItem) => {
       html += `       
               <div class="${styles.column}">
                   <a class="${styles.title} "href="${item.EncodedAbsUrl}">${item.Title}</a>
@@ -117,15 +159,18 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     listContainer.innerHTML = html;
   }
 
-  private _renderListAsync(): void {
-    
+  private LoadData(): void {
+
+    // if(this.properties.DropDownProp != undefined){  
     if (Environment.type == EnvironmentType.SharePoint ||
              Environment.type == EnvironmentType.ClassicSharePoint) {
-      this._getListData()
-        .then((response) => {
-          this._renderList(response.value);
-        });
+              this.GetListData().then((response)=>{  
+                // Render the data in the web part  
+                this.RenderListData(response.value);  
+      
+              });  
     }
-  }
+    }
+  // }
 
 }
