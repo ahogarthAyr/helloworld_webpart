@@ -46,7 +46,9 @@ export interface spList{
   }  
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
-  private dropDownOptions: IPropertyPaneDropdownOption[] = [];  
+  private dropDownOptions: IPropertyPaneDropdownOption[] = []; 
+  private listsDropdownDisabled: boolean = true;
+
   // public constructor(context: WebPartContext) {  
   //   // super(context);  
   // }  
@@ -56,29 +58,43 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     this.domElement.innerHTML = `
     <div class="${ styles.helloWorld }">
         <div id="spListContainer" />
+        <div class="${styles.icon}"><i class="ms-Icon ms-Icon--CustomList" aria-hidden="false"></i><br/></div>
+        <div class="${styles.ddSelect}">
+        Select a list to add to this page.
+        </div>
     </div>`;
     console.log("Render");  
   
     this.LoadData();  
   }
 
+
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }  
 
+
   protected onPropertyPaneConfigurationStart(): void {  
     // Stops execution, if the list values already exists  
-   if(this.dropDownOptions.length>0) return;  
- 
+   this.listsDropdownDisabled = !this.dropDownOptions;
+   
+    if(this.dropDownOptions.length>0){ 
+     console.log('yes');  
+     return;
+   }
+
    this.context.statusRenderer.displayLoadingIndicator(this.domElement, 'DropDownProp');
 
+
    // Calls function to append the list names to dropdown  
-   this.GetLists()  
+
+     this.GetLists();  
  
+        this.listsDropdownDisabled = false;
         this.context.propertyPane.refresh();
         this.context.statusRenderer.clearLoadingIndicator(this.domElement);
         this.render();
- 
+  
  }  
 
  private GetLists():void{  
@@ -105,7 +121,7 @@ private LoadDropDownValues(lists: spList[]): void{
     this.dropDownOptions.push({"key":list.Title,"text":list.Title});
     console.log(list.Title);
   });  
-};
+}
 
 
 
@@ -123,8 +139,8 @@ private LoadDropDownValues(lists: spList[]): void{
                 PropertyPaneDropdown('DropDownProp',{  
                   label: "Select List To Display on the page",  
                   options: this.dropDownOptions,  
-                  disabled: false,
-                  // selectedKey: this.properties.DropDownProp  
+                  disabled: this.listsDropdownDisabled,
+                  selectedKey: this.properties.DropDownProp  
                   
                 })
             ]
@@ -137,7 +153,7 @@ private LoadDropDownValues(lists: spList[]): void{
   }
 
   private GetListData(): Promise<ISPListItems> {
-    let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=EncodedAbsUrl,Title,Description`
+    let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=EncodedAbsUrl,Title,Description`;
 
     return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
@@ -157,20 +173,23 @@ private LoadDropDownValues(lists: spList[]): void{
 
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
     listContainer.innerHTML = html;
+
+
   }
 
   private LoadData(): void {
 
-    // if(this.properties.DropDownProp != undefined){  
+    if(this.properties.DropDownProp != undefined){  
     if (Environment.type == EnvironmentType.SharePoint ||
              Environment.type == EnvironmentType.ClassicSharePoint) {
               this.GetListData().then((response)=>{  
                 // Render the data in the web part  
                 this.RenderListData(response.value);  
-      
+                this.context.propertyPane.refresh();
+
               });  
     }
     }
-  // }
+  }
 
 }

@@ -2,6 +2,21 @@
 
 .helloWorld {
 
+
+  .ddSelect {
+    font-family: "Segoe UI WestEuropean","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+    font-size: 20;
+    font-weight: $ms-font-weight-regular;
+    color: rgb(112, 108, 108);
+  }
+
+  .icon {
+    text-align: center;
+    font-size: 40px;
+  }
+
   .column {
     @include ms-Grid-col;
     @include ms-font-l;
@@ -73,6 +88,5 @@
   }
 
 }
-
 
 
