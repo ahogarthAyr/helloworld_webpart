@@ -64,7 +64,6 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
         </div>
     </div>`;
     console.log("Render");  
-  
     this.LoadData();  
   }
 
@@ -153,7 +152,7 @@ private LoadDropDownValues(lists: spList[]): void{
   }
 
   private GetListData(): Promise<ISPListItems> {
-    let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=EncodedAbsUrl,Title,Description`;
+    let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=EncodedAbsUrl,Title,Description&$top=6`;
 
     return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
@@ -161,6 +160,7 @@ private LoadDropDownValues(lists: spList[]): void{
       });
   }
   private RenderListData(items: ISPListItem[]): void {
+
     let html: string = '';
     items.forEach((item: ISPListItem) => {
       html += `       
@@ -170,12 +170,11 @@ private LoadDropDownValues(lists: spList[]): void{
               </div>  
     `;
     });
-
+    
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
     listContainer.innerHTML = html;
-
-
   }
+
 
   private LoadData(): void {
 
