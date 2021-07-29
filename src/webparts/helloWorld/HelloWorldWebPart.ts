@@ -121,7 +121,6 @@ private LoadDropDownValues(lists: spList[]): void{
   lists.forEach((list:spList)=>{  
     // Loads the drop down values  
     this.dropDownOptions.push({"key":list.Title,"text":list.Title});
-    console.log(list.Title);
   });  
 }
 
@@ -199,8 +198,10 @@ private LoadDropDownValues(lists: spList[]): void{
   
   private GetMostViewed(): Promise<any> {
 
+    // query site pages for ViewsLifetime, sort descending and select properties to filter results
 
-    let url = this.context.pageContext.web.absoluteUrl + `/_api/search/query?querytext=%27path:https://ayrsandbox.sharepoint.com/SitePages%27&rowlimit=10&sortlist=%27ViewsLifetime:descending%27&selectproperties=%27DefaultEncodingUrl,%20Title,%20Description,%20promotedstate,%20ShowInListView%27`;
+    let url = this.context.pageContext.web.absoluteUrl + 
+    `/_api/search/query?querytext=%27path:https://ayrsandbox.sharepoint.com/SitePages%27&rowlimit=10&sortlist=%27ViewsLifetime:descending%27&selectproperties=%27DefaultEncodingUrl,%20Title,%20Description,%20promotedstate,%20ShowInListView%27`;
 
     return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
@@ -209,19 +210,15 @@ private LoadDropDownValues(lists: spList[]): void{
     }
   
 
-  
 
   private RenderMostViewed(items: any): any {
 
+    
     let html: string = '';
-
-   
 
     for(var i=0;i<items.length;i++){  
 
-  // console.log(this.dropDownOptions.indexOf)
-
-      if (items[i].Cells[5]["Value"] == 0 && items[i].Cells[6]["Value"] == null){
+      if (items[i].Cells[5]["Value"] == 0 && items[i].Cells[6]["Value"] == 'true'){
 
      html += 
      `       
@@ -246,11 +243,12 @@ private LoadDropDownValues(lists: spList[]): void{
       let listItems = data.PrimaryQueryResult.RelevantResults.Table.Rows
 
       console.log(listItems)
- 
+
+      if(this.properties.DropDownProp == 'Site Pages'){
 
         this.RenderMostViewed(listItems);  
         this.context.propertyPane.refresh();
-  
+      }
     })
   }
 
