@@ -21,6 +21,7 @@ import {
   Environment,
   EnvironmentType
 } from '@microsoft/sp-core-library';
+import { getItemStyles } from '@fluentui/react/lib/components/ContextualMenu/ContextualMenu.classNames';
 
 export interface IHelloWorldWebPartProps {
   DropDownProp: string;
@@ -32,26 +33,26 @@ export interface ISPListItems {
 
 export interface ISPListItem {
   Title: string;
-  Id: string;
+  Id: number;
   EncodedAbsUrl: string;
   Description: string;
+  PromotedState: number;
+  ShowInListView: Boolean;
+  WelcomePage: string;
 }
 
 export interface spList{  
   Title:string;  
   Id: string;  
   }  
-  export interface spLists{  
+
+export interface spLists{  
     value: spList[];  
   }  
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
   private dropDownOptions: IPropertyPaneDropdownOption[] = []; 
   private listsDropdownDisabled: boolean = true;
-
-  // public constructor(context: WebPartContext) {  
-  //   // super(context);  
-  // }  
 
 
   public render(): void {
@@ -62,9 +63,9 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
         <div class="${styles.ddSelect}">
         Select a list to add to this page.
         </div>
-    </div>`;
-    console.log("Render");  
-    this.LoadData();  
+    </div>`; 
+    // this.LoadData();
+    this.LoadMostViewed();  
   }
 
 
@@ -91,8 +92,10 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
  
         this.listsDropdownDisabled = false;
         this.context.propertyPane.refresh();
-        this.context.statusRenderer.clearLoadingIndicator(this.domElement);
+        // this.context.statusRenderer.clearLoadingIndicator(this.domElement);
         this.render();
+    
+
   
  }  
 
@@ -122,8 +125,6 @@ private LoadDropDownValues(lists: spList[]): void{
   });  
 }
 
-
-
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
@@ -133,10 +134,10 @@ private LoadDropDownValues(lists: spList[]): void{
           },
           groups: [
             {
-              groupName:"Lists",
+              groupName:"",
               groupFields: [  
                 PropertyPaneDropdown('DropDownProp',{  
-                  label: "Select List To Display on the page",  
+                  label: "Select List to Display on the page",  
                   options: this.dropDownOptions,  
                   disabled: this.listsDropdownDisabled,
                   selectedKey: this.properties.DropDownProp  
@@ -151,44 +152,106 @@ private LoadDropDownValues(lists: spList[]): void{
     };
   }
 
-  private GetListData(): Promise<ISPListItems> {
-    let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=EncodedAbsUrl,Title,Description&$top=6`;
+  // private GetListData(): Promise<ISPListItems> {
+  //   let url = this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this.properties.DropDownProp}')/items?$select=Id,EncodedAbsUrl,Title,Description,PromotedState,ShowInListView`;
+
+  //   return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
+  //     .then((response: SPHttpClientResponse) => {
+  //       return response.json();
+  //     });
+  // }
+  // private RenderListData(items: ISPListItem[]): void {
+
+  //   let html: string = '';
+  //   items.forEach((item: ISPListItem) => {
+
+  //     if(item.Id != 1 && item.PromotedState == 0 && item.ShowInListView == true){
+  
+  //     html += `       
+  //             <div class="${styles.column}">
+  //                 <a class="${styles.title} "href="${item.EncodedAbsUrl}">${item.Title}</a>
+  //                 <div class="${styles.description}" >${item.Description}</div>
+  //             </div>  
+  //   `;  
+  //     }
+  //   });
+    
+  //   const listContainer: Element = this.domElement.querySelector('#spListContainer');
+  //   listContainer.innerHTML = html;
+  // }
+
+     
+  // private LoadData(): void {
+
+  //   if(this.properties.DropDownProp != undefined){  
+  //   if (Environment.type == EnvironmentType.SharePoint ||
+  //            Environment.type == EnvironmentType.ClassicSharePoint) {
+  //             this.GetListData().then((response)=>{  
+  //               // Render the data in the web part  
+  //               this.RenderListData(response.value);  
+  //               this.context.propertyPane.refresh();
+
+  //             });  
+  //   }
+  //   }
+  // }
+
+  
+  private GetMostViewed(): Promise<any> {
+
+
+    let url = this.context.pageContext.web.absoluteUrl + `/_api/search/query?querytext=%27path:https://ayrsandbox.sharepoint.com/SitePages%27&rowlimit=10&sortlist=%27ViewsLifetime:descending%27&selectproperties=%27DefaultEncodingUrl,%20Title,%20Description,%20promotedstate,%20ShowInListView%27`;
 
     return this.context.spHttpClient.get(url, SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => {
-        return response.json();
+        return response.json();        
       });
-  }
-  private RenderListData(items: ISPListItem[]): void {
+    }
+  
+
+  
+
+  private RenderMostViewed(items: any): any {
 
     let html: string = '';
-    items.forEach((item: ISPListItem) => {
-      html += `       
+
+   
+
+    for(var i=0;i<items.length;i++){  
+
+  // console.log(this.dropDownOptions.indexOf)
+
+      if (items[i].Cells[5]["Value"] == 0 && items[i].Cells[6]["Value"] == null){
+
+     html += 
+     `       
               <div class="${styles.column}">
-                  <a class="${styles.title} "href="${item.EncodedAbsUrl}">${item.Title}</a>
-                  <div class="${styles.description}" >${item.Description}</div>
+                  <a class="${styles.title} "href="${items[i].Cells[2]["Value"]}">${items[i].Cells[3]["Value"]}</a>
+                  <div class="${styles.description}" >${items[i].Cells[4]["Value"]}</div>
               </div>  
-    `;
-    });
+
+    `;  
+      }
+    };
     
     const listContainer: Element = this.domElement.querySelector('#spListContainer');
     listContainer.innerHTML = html;
   }
 
 
-  private LoadData(): void {
+  private LoadMostViewed(): void {
 
-    if(this.properties.DropDownProp != undefined){  
-    if (Environment.type == EnvironmentType.SharePoint ||
-             Environment.type == EnvironmentType.ClassicSharePoint) {
-              this.GetListData().then((response)=>{  
-                // Render the data in the web part  
-                this.RenderListData(response.value);  
-                this.context.propertyPane.refresh();
+    this.GetMostViewed().then((data)=>{
+     
+      let listItems = data.PrimaryQueryResult.RelevantResults.Table.Rows
 
-              });  
-    }
-    }
+      console.log(listItems)
+ 
+
+        this.RenderMostViewed(listItems);  
+        this.context.propertyPane.refresh();
+  
+    })
   }
 
 }

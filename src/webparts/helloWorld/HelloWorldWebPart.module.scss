@@ -20,13 +20,15 @@
   .column {
     @include ms-Grid-col;
     @include ms-font-l;
-    @include ms-md4; 
-    margin-bottom: 20px;
+    @include ms-md4;
+    padding-left:0 !important;
+    padding-right:20px !important;
+    margin-bottom:30px; 
   }
 
   .column a {
-    color:rgb(75, 71, 71);
-  }
+    color:rgb(48, 126, 228);
+    }
 
   .title:link {
     // text-decoration: none;
