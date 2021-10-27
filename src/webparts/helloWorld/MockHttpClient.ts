@@ -1,4 +1,4 @@
-import { ISPListItem } from './HelloWorldWebPart';
+// import { ISPListItem } from './HelloWorldWebPart';
 
 export default class MockHttpClient  {
 

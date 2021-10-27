@@ -3,8 +3,8 @@
     "isCreatingSolution": true,
     "environment": "spo",
     "version": "1.12.1",
-    "libraryName": "helloworld-webpart",
-    "libraryId": "78337c02-6fa5-44f7-b17a-15b999614d61",
+    "libraryName": "listview-webpart",
+    "libraryId": "b25fccf7-40a1-4882-a515-c81c9ecbfddc",
     "packageManager": "npm",
     "isDomainIsolated": false,
     "componentType": "webpart"

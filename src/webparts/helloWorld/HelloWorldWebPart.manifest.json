@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "1527d42d-03ef-4052-94ae-fd3d0550c1d5",
+  "id": "5c46dc85-0f79-4059-ac8e-3bab1f28665a",
   "alias": "ListPreview",
   "componentType": "WebPart",
 
@@ -15,7 +15,7 @@
   "supportedHosts": ["SharePointWebPart"],
 
   "preconfiguredEntries": [{
-    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "groupId": "5c46dc85-0f79-4059-ac8e-3bab1f28665a", // Other
     "group": { "default": "Other" },
     "title": { "default": "List Preview" },
     "description": { "default": "List selection" },
